@@ -6,7 +6,7 @@
 # When running this on the pi, be sure to uncomment PyQt5, win, and mng
 
 from urllib.request import urlopen
-from PyQt5 import QtWidgets
+#from PyQt5 import QtWidgets
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
@@ -69,7 +69,7 @@ def readData():
     return valArray
 
 # initialize our plot so animation looks clean
-def initPlot():
+def initPlot(): #TODO: pass GPS data into here
     plt.clf()                # clear plot
     plt.axis('off')          # remove axes from plot
     plt.ylim(0,imHeight)     # force y axis to start at 0 at bottom left
@@ -81,17 +81,25 @@ def initPlot():
     plt.subplots_adjust(left=0.4, bottom=0.01, top=0.99)
     
     # print a fitting title to our figure off to the upper left side of the window
-    plt.text(0.05, 0.6, 'Lexi\'s Current \n    Location', fontsize=24, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontsize=24, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.35, 'Lat: ' + '33.6' + ' N', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.2, 0.35, 'Long: ' + '117.4' + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
+    
     
     # remove toolbar from window to make it cleaner
     # only works on pi due to Qt5 backend
+    '''
     try:
         win = fig.canvas.manager.window
     except AttributeError:
         win = fig.canvas.window()
     toolbar = win.findChild(QtWidgets.QToolBar)
     toolbar.setVisible(False)
-    
+    '''
     # give our window a fitting title
     fig.canvas.set_window_title('LEXI Tracker')
     
@@ -114,7 +122,7 @@ def convertCoord(valArray):
 # animation loop to display live coordinates on figure window
 def animate(i):
     print("Start animate")
-    initPlot()    # see initPlot() in this file above
+    
     
     # extract GPS data (see readData() in this file above)
     valArray = readData()
@@ -132,6 +140,8 @@ def animate(i):
     print("xPix: " + str(coordPix[0]))
     print("yPix: " + str(coordPix[1]))
 
+    initPlot()    # see initPlot() in this file above
+
     # plot a red dot of the position on the map
     # scatter takes (xCoord, yCoord, dotColor, dotSize)
     plt.scatter([coordPix[0]], [coordPix[1]], c='r', s=100)
@@ -140,11 +150,11 @@ def animate(i):
 
 # animate the figure so that it is getting live GPS updates
 def update():
-    
+    '''
     # Maximize the size of the window so that it takes up the whole display
     mng = plt.get_current_fig_manager()
     mng.window.showMaximized()
-    
+    '''
     # loop once plt.show() runs
     ani = animation.FuncAnimation(fig, animate)
     
