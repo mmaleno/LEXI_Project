@@ -18,6 +18,7 @@ fontReg = FontProperties()      # create a font object for regular weight
 fontReg.set_weight('normal')    # set the regular font object's weight to normal
 fontBold = FontProperties()     # create a font object for bold weight
 fontBold.set_weight('bold')     # set the bold font object's weight to bold
+fontBold.set_size(24)           # set the bold font object's size to a title-size
 
 image_name = 'thePark.png'        # be sure screenshot of map is .png
 dataURL = 'http://192.168.0.5'    # IP of ESP8266
@@ -86,7 +87,7 @@ def initPlot(): #TODO: pass GPS data into here
     plt.subplots_adjust(left=0.43, bottom=0.01, top=0.99)
     
     # print a fitting title to our figure off to the upper left side of the window
-    plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold, fontsize=24,transform=plt.gcf().transFigure)
+    plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
     plt.text(0.02, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
