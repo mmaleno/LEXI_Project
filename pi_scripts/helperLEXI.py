@@ -3,10 +3,10 @@
 
 # see mainLEXI.py for TODO
 
-# When running this on the pi, be sure to uncomment PyQt5, win and mng
+# When running this on the pi, be sure to uncomment PyQt5, win, and mng
 
 from urllib.request import urlopen
-#from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
@@ -76,23 +76,24 @@ def initPlot():
     plt.xlim(0,imWidth)      # force x axis to start at 0 at bottom left
     implot = plt.imshow(im)  # print our map behind the data
     
-    # see version of this file on the pi for comments for below two lines
+    # stretch the map to fill (almost) the entire vertical, and shift
+    # it to the right to make room for other text
     plt.subplots_adjust(left=0.4, bottom=0.01, top=0.99)
-    plt.text(0.05,0.6,'Lexi\'s Current \n     Location',fontsize=24,transform=plt.gcf().transFigure)
-
-
+    
+    # print a fitting title to our figure off to the upper left side of the window
+    plt.text(0.05, 0.6, 'Lexi\'s Current \n    Location', fontsize=24, transform=plt.gcf().transFigure)
     
     # remove toolbar from window to make it cleaner
     # only works on pi due to Qt5 backend
-    #try:
-    #    win = fig.canvas.manager.window
-    #except AttributeError:
-    #    win = fig.canvas.window()
-    #toolbar = win.findChild(QtWidgets.QToolBar)
-    #toolbar.setVisible(False)
+    try:
+        win = fig.canvas.manager.window
+    except AttributeError:
+        win = fig.canvas.window()
+    toolbar = win.findChild(QtWidgets.QToolBar)
+    toolbar.setVisible(False)
     
     # give our window a fitting title
-    #fig.canvas.set_window_title('LEXI Tracker')
+    fig.canvas.set_window_title('LEXI Tracker')
     
 # convert GPS coordinates into plottable (x,y) coordinates
 def convertCoord(valArray):
@@ -141,8 +142,8 @@ def animate(i):
 def update():
     
     # Maximize the size of the window so that it takes up the whole display
-    #mng = plt.get_current_fig_manager()
-    #mng.window.showMaximized()
+    mng = plt.get_current_fig_manager()
+    mng.window.showMaximized()
     
     # loop once plt.show() runs
     ani = animation.FuncAnimation(fig, animate)
