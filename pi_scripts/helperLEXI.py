@@ -78,16 +78,16 @@ def initPlot(): #TODO: pass GPS data into here
     
     # stretch the map to fill (almost) the entire vertical, and shift
     # it to the right to make room for other text
-    plt.subplots_adjust(left=0.4, bottom=0.01, top=0.99)
+    plt.subplots_adjust(left=0.43, bottom=0.01, top=0.99)
     
     # print a fitting title to our figure off to the upper left side of the window
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontsize=24, transform=plt.gcf().transFigure)
-    plt.text(0.05, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.05, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.05, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.05, 0.35, 'Lat: ' + '33.6' + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.2, 0.35, 'Long: ' + '117.4' + ' W', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.05, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.35, 'Lat: ' + '33.6' + ' N', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.17, 0.35, 'Long: ' + '117.4' + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
     
     
     # remove toolbar from window to make it cleaner
