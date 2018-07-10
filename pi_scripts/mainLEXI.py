@@ -1,11 +1,12 @@
 # mainLEXI.py - 6/25/18
 # a clean version of live_animate.py (alongside helperLEXI.py)
 
-# TODO: implement connected/disconnected status, remove copious print statements
-#       display time of last plotted position, display text of
-#       "real word" location (ex: "driveway", "backyard", etc.),
-#       display gps status (connected, # of sats, lat/long, sped), display wifi
-#       status (connected, signal strength)
+# TODO: implement real relevant data, remove copious print statements
+#        display text of "real word" location (ex: "driveway", "backyard", etc.),
+#       display # of sats from gps, display wifi signal strength of tracker)
+#        ENABLE REMOTE TALKING TO LEXI?????? (need mic and speaker)
+#       Allow multiple files by passing fig object as argument in function (like FDIR)
+#       Add auto-startup - need to add switch/button to RUN pins onboard the pi
 
 from helperLEXI import update
 

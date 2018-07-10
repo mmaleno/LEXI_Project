@@ -82,11 +82,11 @@ def initPlot(): #TODO: pass GPS data into here
     plt.xlim(0,imWidth)      # force x axis to start at 0 at bottom left
     implot = plt.imshow(im)  # print our map behind the data
     
-    # stretch the map to fill (almost) the entire vertical, and shift
+    # enlarge the map to fill (almost) the entire vertical, and shift
     # it to the right to make room for other text
     plt.subplots_adjust(left=0.43, bottom=0.01, top=0.99)
     
-    # print a fitting title to our figure off to the upper left side of the window
+    # print relevant information off to the left hand side of our window (see values ~0.02)
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
     plt.text(0.02, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
