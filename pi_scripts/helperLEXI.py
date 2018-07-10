@@ -1,17 +1,18 @@
-# helperLEXI.py - 6/25/18
+# helperLEXI.py - 7/8/18
 # a clean version of live_animate.py (alongside mainLEXI.py)
 
 # see mainLEXI.py for TODO
 
 # When running this on the pi, be sure to uncomment PyQt5, win, and mng
 
-from urllib.request import urlopen
-#from PyQt5 import QtWidgets
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from matplotlib.font_manager import FontProperties
-import numpy as np
-import time
+from urllib.request import urlopen                  # for reading data from ESP8266
+#from PyQt5 import QtWidgets                        # for controlling GUI window on pi
+import matplotlib.pyplot as plt                     # for plotting on GUI window
+import matplotlib.animation as animation            # for live-animating GUI window
+from matplotlib.font_manager import FontProperties  # for changing font in GUI window
+import numpy as np                                  # for plotting on GUI window
+import time                                         # for forcing the program to slow down
+import os                                           # for pinging our ESP8266
 
 fig = plt.figure()              # create a figure within our plot
 fontReg = FontProperties()      # create a font object for regular weight
@@ -21,7 +22,9 @@ fontBold.set_weight('bold')     # set the bold font object's weight to bold
 fontBold.set_size(24)           # set the bold font object's size to a title-size
 
 image_name = 'thePark.png'        # be sure screenshot of map is .png
-dataURL = 'http://192.168.0.5'    # IP of ESP8266
+hostname = '192.168.0.5'          # version of IP for ping
+dataURL = 'http://192.168.0.5'    # IP of ESP8266 for urlopen
+
 im = np.flipud(plt.imread(image_name))  # need to flip image up/down...
                                         # ...due to how pixels are indexed
 imHeight, imWidth, channels = im.shape  # detect image size, ignore channels
@@ -34,53 +37,77 @@ zeroLat = 33.652619
 imWidthLong = -117.753419
 imHeightLat = 33.653867
 
+# function to see if tracker is connected
+def checkWifiConnectivity():
+    wifiConnected = 0 # by default, we say our ESP8266 is not connected. We're pessimistic!
+
+    response = os.system("ping -c 1 " + hostname) # ping our ESP8266
+    
+    # check response
+    if (response == 0):
+        print(hostname, 'is up!')
+        wifiConnected = 1           # set wifiConnected to TRUE
+    else:
+        print(hostname, 'is down!') # print error message, leave wifiConnected as FALSE
+
+    return wifiConnected
 
 # function to grab data from ESP8266's website/IP
 def readData():
 
-    # status boolean to see if wifi is connected, default to not connected
-    wifiConnected = 0
-
     print("Start readData")
-    page = urlopen(dataURL)  # unpack webpage contents
-    wifiConnected = 1           # confirm that we are connected to tracker via wifi
 
-    xVal = 0
-    yVal = 0
+    wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
+                                            # ...connected to tracker via wifi
+    
+    if (wifiConnected): # wifiConnected is 1 is it is connected
 
-    # cycle thru page to find what we are looking for
-    for line in page:
+        # initialize coordinates as 0
+        xVal = 0
+        yVal = 0
 
-        # in this case, we used 'x: ' to find the line with x data
-        # we need " b' " in front of the string to turn it into a byte-type
-        if b'x: ' in line:
+        page = urlopen(dataURL)  # unpack webpage contents
 
-            # find start and end indices of x value
-            start_index = line.decode('utf-8').find(' ')
-            end_index = line.decode('utf-8').find('<')
+        # cycle thru page to find what we are looking for
+        for line in page:
 
-            # create a string from the extracted byte-value
-            xValStr = line[start_index+1:end_index].decode('utf-8')
-            print("Grabbed x Coord: " + xValStr)
+            # in this case, we used 'x: ' to find the line with x data
+            # we need " b' " in front of the string to turn it into a byte-type
+            if b'x: ' in line:
 
-            # convert extracted value into usable form
-            xVal = float(xValStr)
+                # find start and end indices of x value
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
 
-        if b'y: ' in line:
-            start_index = line.decode('utf-8').find(' ')
-            end_index = line.decode('utf-8').find('<')
-            yValStr = line[start_index+1:end_index].decode('utf-8')
-            print("Grabbed y Coord: " + yValStr)
-            yVal = float(yValStr)
-            break
+                # create a string from the extracted byte-value
+                xValStr = line[start_index+1:end_index].decode('utf-8')
+                print("Grabbed x Coord: " + xValStr)
 
-    page.close()                # close python's reading of URL
-    valArray = [xVal,yVal, wifiConnected]      # pack extracted values into array
-    print("End readData")
-    return valArray
+                # convert extracted value into usable form
+                xVal = float(xValStr)
+
+            if b'y: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                yValStr = line[start_index+1:end_index].decode('utf-8')
+                print("Grabbed y Coord: " + yValStr)
+                yVal = float(yValStr)
+                break
+
+        page.close()                # close python's reading of URL
+
+        valArray = [xVal,yVal, wifiConnected]      # pack important info into array
+
+        print("End readData")
+        return valArray
+        
+    else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
+
+        print("urlRead FAILED!!")
+        return [0,0,wifiConnected]
 
 # initialize our plot so animation looks clean
-def initPlot(): #TODO: pass GPS data into here
+def initPlot():
     plt.clf()                # clear plot
     plt.axis('off')          # remove axes from plot
     plt.ylim(0,imHeight)     # force y axis to start at 0 at bottom left
@@ -118,6 +145,7 @@ def convertCoord(valArray):
     # formula for converting the GPS coordinates into plottable pixel coordinates
     xPix = (imWidth / (imWidthLong - zeroLong)) * (xDeg - zeroLong)
     yPix = (imHeight / (imHeightLat - zeroLat)) * (yDeg - zeroLat)
+
     return [xPix, yPix]
 
 # animation loop to display live coordinates on figure window
@@ -146,7 +174,7 @@ def animate(i):
     initPlot()    # see initPlot() in this file above
 
     # Determine string of wifi status
-    if (valArray[2] == 1):
+    if (valArray[2]):
         stringWifiConnected = 'Is'
     else:
         stringWifiConnected = 'Not'  
