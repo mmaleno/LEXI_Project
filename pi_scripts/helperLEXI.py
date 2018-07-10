@@ -92,11 +92,18 @@ def readData():
                 yValStr = line[start_index+1:end_index].decode('utf-8')
                 print("Grabbed y Coord: " + yValStr)
                 yVal = float(yValStr)
+
+            if b'fix: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                fixStatusStr = line[start_index+1:end_index].decode('utf-8')
+                print("Fix Status: " + fixStatusStr)
+                fixStatus = int(fixStatusStr)
                 break
 
         page.close()                # close python's reading of URL
 
-        valArray = [xVal,yVal, wifiConnected]      # pack important info into array
+        valArray = [xVal,yVal, wifiConnected, fixStatus]      # pack important info into array
 
         print("End readData")
         return valArray
@@ -153,6 +160,7 @@ def animate(i):
     print("Start animate")
 
     stringWifiConnected = ''
+    stringFixStatus = ''
     
     
     # extract GPS data (see readData() in this file above)
@@ -176,13 +184,21 @@ def animate(i):
     # Determine string of wifi status
     if (valArray[2]):
         stringWifiConnected = 'Is'
+        # Determine string of GPS status
+        if (valArray[3]):
+            stringFixStatus = 'Has Fix'
+        else:
+            stringFixStatus = 'No Fix'
     else:
-        stringWifiConnected = 'Not'  
+        stringWifiConnected = 'Not'
+        stringFixStatus = 'Pending Tracker Connection'
+
+      
 
     # print relevant information off to the left hand side of our window (see values ~0.02)
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
     plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.17, 0.35, 'Long: ' + str(valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
