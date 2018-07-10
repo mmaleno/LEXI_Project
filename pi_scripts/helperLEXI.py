@@ -38,8 +38,13 @@ imHeightLat = 33.653867
 # function to grab data from ESP8266's website/IP
 def readData():
 
+    # status boolean to see if wifi is connected, default to not connected
+    wifiConnected = 0
+
     print("Start readData")
     page = urlopen(dataURL)  # unpack webpage contents
+    wifiConnected = 1           # confirm that we are connected to tracker via wifi
+
     xVal = 0
     yVal = 0
 
@@ -70,7 +75,7 @@ def readData():
             break
 
     page.close()                # close python's reading of URL
-    valArray = [xVal,yVal]      # pack extracted values into array
+    valArray = [xVal,yVal, wifiConnected]      # pack extracted values into array
     print("End readData")
     return valArray
 
@@ -85,16 +90,6 @@ def initPlot(): #TODO: pass GPS data into here
     # enlarge the map to fill (almost) the entire vertical, and shift
     # it to the right to make room for other text
     plt.subplots_adjust(left=0.43, bottom=0.01, top=0.99)
-    
-    # print relevant information off to the left hand side of our window (see values ~0.02)
-    plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.7, 'Tracker: ' + 'Not' + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.35, 'Lat: ' + '33.6' + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.17, 0.35, 'Long: ' + '117.4' + ' W', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
-    
     
     # remove toolbar from window to make it cleaner
     # only works on pi due to Qt5 backend
@@ -128,6 +123,8 @@ def convertCoord(valArray):
 # animation loop to display live coordinates on figure window
 def animate(i):
     print("Start animate")
+
+    stringWifiConnected = ''
     
     
     # extract GPS data (see readData() in this file above)
@@ -147,6 +144,21 @@ def animate(i):
     print("yPix: " + str(coordPix[1]))
 
     initPlot()    # see initPlot() in this file above
+
+    # Determine string of wifi status
+    if (valArray[2] == 1):
+        stringWifiConnected = 'Is'
+    else:
+        stringWifiConnected = 'Not'  
+
+    # print relevant information off to the left hand side of our window (see values ~0.02)
+    plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.6, 'GPS: ' + 'Finding' + ' Fix', fontsize=18, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.17, 0.35, 'Long: ' + str(valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
 
     # plot a red dot of the position on the map
     # scatter takes (xCoord, yCoord, dotColor, dotSize)
