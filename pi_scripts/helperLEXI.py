@@ -5,8 +5,11 @@
 
 # When running this on the pi, be sure to uncomment PyQt5, win, and mng
 
+version = 'mac'     # set this equal to 'pi' when running on pi
+
 from urllib.request import urlopen                  # for reading data from ESP8266
-#from PyQt5 import QtWidgets                        # for controlling GUI window on pi
+if (version == 'pi'):
+    from PyQt5 import QtWidgets                        # for controlling GUI window on pi
 import matplotlib.pyplot as plt                     # for plotting on GUI window
 import matplotlib.animation as animation            # for live-animating GUI window
 from matplotlib.font_manager import FontProperties  # for changing font in GUI window
@@ -127,14 +130,14 @@ def initPlot():
     
     # remove toolbar from window to make it cleaner
     # only works on pi due to Qt5 backend
-    '''
-    try:
-        win = fig.canvas.manager.window
-    except AttributeError:
-        win = fig.canvas.window()
-    toolbar = win.findChild(QtWidgets.QToolBar)
-    toolbar.setVisible(False)
-    '''
+    if (version == 'pi'):
+        try:
+            win = fig.canvas.manager.window
+        except AttributeError:
+            win = fig.canvas.window()
+        toolbar = win.findChild(QtWidgets.QToolBar)
+        toolbar.setVisible(False)
+    
     # give our window a fitting title
     fig.canvas.set_window_title('LEXI Tracker')
     
@@ -212,11 +215,11 @@ def animate(i):
 
 # animate the figure so that it is getting live GPS updates
 def update():
-    '''
-    # Maximize the size of the window so that it takes up the whole display
-    mng = plt.get_current_fig_manager()
-    mng.window.showMaximized()
-    '''
+    if (version == 'pi'):
+        # Maximize the size of the window so that it takes up the whole display
+        mng = plt.get_current_fig_manager()
+        mng.window.showMaximized()
+    
     # loop once plt.show() runs
     ani = animation.FuncAnimation(fig, animate)
     
