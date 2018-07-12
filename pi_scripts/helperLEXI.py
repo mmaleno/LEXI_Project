@@ -110,12 +110,39 @@ def readData():
                 numSatsStr = line[start_index+1:end_index].decode('utf-8')
                 print("# of Sats: " + numSatsStr)
                 numSats = int(numSatsStr)
-                break
+            
+            if b'hour: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                hourStr = line[start_index+1:end_index].decode('utf-8')
+                print("Hour: " + hourStr)
+                hour = int(hourStr)
+            
+            if b'min: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                minStr = line[start_index+1:end_index].decode('utf-8')
+                print("Minute: " + minStr)
+                minute = int(minStr)
+            
+            if b'sec: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                secStr = line[start_index+1:end_index].decode('utf-8')
+                print("Second: " + secStr)
+                second = int(secStr)
+            
+            if b'mer: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                merStr = line[start_index+1:end_index].decode('utf-8')
+                print("Meridian: " + merStr)
+                mer = merStr
 
 
         page.close()                # close python's reading of URL
 
-        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats]      # pack important info into array
+        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer]      # pack important info into array
 
         print("End readData")
         return valArray
@@ -181,6 +208,13 @@ def animate(i):
     # print the extracted values for convenient console debugging
     print("valArray[0]: " + str(valArray[0]))
     print("valArray[1]: " + str(valArray[1]))
+    print("valArray[2]: " + str(valArray[2]))
+    print("valArray[3]: " + str(valArray[3]))
+    print("valArray[4]: " + str(valArray[4]))
+    print("valArray[5]: " + str(valArray[5]))
+    print("valArray[6]: " + str(valArray[6]))
+    print("valArray[7]: " + str(valArray[7]))
+    print("valArray[8]: " + str(valArray[8]))
 
     # convert extracted GPS values into coordinates (see convertCoord above)
     coordPix = convertCoord(valArray)
@@ -207,13 +241,26 @@ def animate(i):
         stringWifiConnected = 'Not'
         stringFixStatus = 'Pending Tracker Connection'
 
-      
+    stringHour = str(valArray[5])
+    stringMinute = str(valArray[6])
+    stringSecond = str(valArray[7])
+    stringMeridian = valArray[8]
+    
+    if (valArray[5]<10):
+        stringHour = "0" + str(valArray[5])
+    if (valArray[6]<10):
+        stringMinute = "0" + str(valArray[6])
+    if (valArray[7]<10):
+        stringSecond = "0" + str(valArray[7])
+
+    stringTime = stringHour + ":" + stringMinute + ":" + stringSecond + " " + stringMeridian
+
     print()
     # print relevant information off to the left hand side of our window (see values ~0.02)
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
     plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.29, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
