@@ -150,7 +150,7 @@ def readData():
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
 
         print("urlRead FAILED!!")
-        return [0,0,wifiConnected]
+        return [0,0,wifiConnected, 0, 0, 0, 0, 0, "NO TIME"]
 
 # initialize our plot so animation looks clean
 def initPlot():
