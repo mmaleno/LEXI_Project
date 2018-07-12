@@ -40,6 +40,11 @@ zeroLat = 33.652619
 imWidthLong = -117.753419
 imHeightLat = 33.653867
 
+lastSuccessHour = 0
+lastSuccessMinute = 0
+lastSuccessSecond = 0
+lastSuccessMeridian = 'NEVER'
+
 # function to see if tracker is connected
 def checkWifiConnectivity():
     wifiConnected = 0 # by default, we say our ESP8266 is not connected. We're pessimistic!
@@ -59,6 +64,13 @@ def checkWifiConnectivity():
 def readData():
 
     print("Start readData")
+
+    global lastSuccessHour
+    global lastSuccessMinute    
+    global lastSuccessSecond    
+    global lastSuccessMeridian
+
+    reachedSats = 0
 
     wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
                                             # ...connected to tracker via wifi
@@ -110,39 +122,55 @@ def readData():
                 numSatsStr = line[start_index+1:end_index].decode('utf-8')
                 print("# of Sats: " + numSatsStr)
                 numSats = int(numSatsStr)
+                reachedSats = 1
             
-            if b'hour: ' in line:
-                start_index = line.decode('utf-8').find(' ')
-                end_index = line.decode('utf-8').find('<')
-                hourStr = line[start_index+1:end_index].decode('utf-8')
-                print("Hour: " + hourStr)
-                hour = int(hourStr)
-            
-            if b'min: ' in line:
-                start_index = line.decode('utf-8').find(' ')
-                end_index = line.decode('utf-8').find('<')
-                minStr = line[start_index+1:end_index].decode('utf-8')
-                print("Minute: " + minStr)
-                minute = int(minStr)
-            
-            if b'sec: ' in line:
-                start_index = line.decode('utf-8').find(' ')
-                end_index = line.decode('utf-8').find('<')
-                secStr = line[start_index+1:end_index].decode('utf-8')
-                print("Second: " + secStr)
-                second = int(secStr)
-            
-            if b'mer: ' in line:
-                start_index = line.decode('utf-8').find(' ')
-                end_index = line.decode('utf-8').find('<')
-                merStr = line[start_index+1:end_index].decode('utf-8')
-                print("Meridian: " + merStr)
-                mer = merStr
+            if(reachedSats):
+                if (fixStatus):
+                    for line in page:
+                        if b'hour: ' in line:
+                            start_index = line.decode('utf-8').find(' ')
+                            end_index = line.decode('utf-8').find('<')
+                            hourStr = line[start_index+1:end_index].decode('utf-8')
+                            print("Hour: " + hourStr)
+                            hour = int(hourStr)
+                    
+                        if b'min: ' in line:
+                            start_index = line.decode('utf-8').find(' ')
+                            end_index = line.decode('utf-8').find('<')
+                            minStr = line[start_index+1:end_index].decode('utf-8')
+                            print("Minute: " + minStr)
+                            minute = int(minStr)
+                    
+                        if b'sec: ' in line:
+                            start_index = line.decode('utf-8').find(' ')
+                            end_index = line.decode('utf-8').find('<')
+                            secStr = line[start_index+1:end_index].decode('utf-8')
+                            print("Second: " + secStr)
+                            second = int(secStr)
+                    
+                        if b'mer: ' in line:
+                            start_index = line.decode('utf-8').find(' ')
+                            end_index = line.decode('utf-8').find('<')
+                            merStr = line[start_index+1:end_index].decode('utf-8')
+                            print("Meridian: " + merStr)
+                            mer = merStr
+                            break
+                else:
+                    hour = lastSuccessHour
+                    minute = lastSuccessMinute
+                    second = lastSuccessSecond
+                    mer = lastSuccessMeridian
+                    break
+
 
 
         page.close()                # close python's reading of URL
 
-        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer]      # pack important info into array
+        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer]     # pack important info into array
+        lastSuccessHour = hour
+        lastSuccessMinute = minute
+        lastSuccessSecond = second
+        lastSuccessMeridian = mer
 
         print("End readData")
         return valArray
@@ -150,7 +178,13 @@ def readData():
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
 
         print("urlRead FAILED!!")
-        return [0,0,wifiConnected, 0, 0, 0, 0, 0, "NO TIME"]
+        '''
+        global lastSuccessHour
+        global lastSuccessMinute
+        global lastSuccessSecond
+        global lastSuccessMeridian
+        '''
+        return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian]
 
 # initialize our plot so animation looks clean
 def initPlot():
