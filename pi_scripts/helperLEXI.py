@@ -201,6 +201,8 @@ def animate(i):
             stringFixStatus = str(valArray[4]) + ' Sats Connected'
         else:
             stringFixStatus = 'No Fix'
+            valArray[0] = 0
+            valArray[1] = 0
     else:
         stringWifiConnected = 'Not'
         stringFixStatus = 'Pending Tracker Connection'
@@ -213,7 +215,7 @@ def animate(i):
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.29, 'Long: ' + str(valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.29, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
 
     # plot a red dot of the position on the map
