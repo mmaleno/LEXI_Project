@@ -178,12 +178,6 @@ def readData():
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
 
         print("urlRead FAILED!!")
-        '''
-        global lastSuccessHour
-        global lastSuccessMinute
-        global lastSuccessSecond
-        global lastSuccessMeridian
-        '''
         return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian]
 
 # initialize our plot so animation looks clean
@@ -294,7 +288,7 @@ def animate(i):
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
     plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.45, 'Last Successful\n Transmission:   ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.29, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
