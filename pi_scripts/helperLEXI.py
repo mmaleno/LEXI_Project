@@ -84,31 +84,22 @@ def readData():
                 end_index = line.decode('utf-8').find('<')
 
                 # create a string from the extracted byte-value
-                print("1")
                 xValStr = line[start_index+1:end_index].decode('utf-8')
-                print("2")
                 print("Grabbed x Coord: " + xValStr)
-                print("3")
 
                 # convert extracted value into usable form
                 xVal = float(xValStr)
-                print("4")
-            print("4.5")
+
             if b'y: ' in line:
                 start_index = line.decode('utf-8').find(' ')
                 end_index = line.decode('utf-8').find('<')
-                print("5")
                 yValStr = line[start_index+1:end_index].decode('utf-8')
-                print("6")
                 print("Grabbed y Coord: " + yValStr)
-                print("7")
                 yVal = float(yValStr)
-                print("8")
-            print("8.5")
+
             if b'fix?: ' in line:
                 start_index = line.decode('utf-8').find(' ')
                 end_index = line.decode('utf-8').find('<')
-                print("9")
                 fixStatusStr = line[start_index+1:end_index].decode('utf-8')
                 print("Fix Status: " + fixStatusStr)
                 fixStatus = int(fixStatusStr)
@@ -124,11 +115,9 @@ def readData():
 
         page.close()                # close python's reading of URL
 
-        print(xVal)
         valArray = [xVal,yVal, wifiConnected, fixStatus, numSats]      # pack important info into array
 
         print("End readData")
-        print("Before Return: " + str(valArray[0]))
         return valArray
         
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
@@ -224,8 +213,8 @@ def animate(i):
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:    ' + '4:00' + ' PM', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.2, 0.35, 'Long: ' + str(valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.28, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.29, 'Long: ' + str(valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
 
     # plot a red dot of the position on the map
     # scatter takes (xCoord, yCoord, dotColor, dotSize)

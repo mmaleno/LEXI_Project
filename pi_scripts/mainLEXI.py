@@ -3,7 +3,7 @@
 
 # TODO: implement real relevant data, remove copious print statements
 #        display text of "real word" location (ex: "driveway", "backyard", etc.),
-#       display # of sats from gps, display wifi signal strength of tracker)
+#        display wifi signal strength of tracker)
 #        ENABLE REMOTE TALKING TO LEXI?????? (need mic and speaker)
 #       Allow multiple files by passing fig object as argument in function (like FDIR)
 #       Add auto-startup - need to add switch/button to RUN pins onboard the pi
