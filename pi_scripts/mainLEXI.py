@@ -4,6 +4,7 @@
 # TODO:  -remove copious print statements (maybe not, they've been helpful)
 #        -display text of "real word" location (ex: "driveway", "backyard", etc.),
 #        -put tracker connection pending text on next line (have text wrap)
+#        -Instead of 00:00:00 NEVER, make just "NEVER"
 #        -display wifi signal strength of tracker
 #        -display battery voltage
 #        -ENABLE REMOTE TALKING TO LEXI?????? (need mic and speaker)
