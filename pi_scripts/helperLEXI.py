@@ -3,6 +3,8 @@
 
 # see mainLEXI.py for TODO
 
+# fucked up version of helperLEXI, i tried to add timeout to urlopen with signal
+
 # Quick trick to detect what operating system we are on,
 # so that OS-specific lines are included automatically
 import platform
