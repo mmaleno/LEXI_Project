@@ -123,7 +123,12 @@ def readData():
         yVal = 0
         numSats = 0
         print("Right before urlopen")
-        page = urlopen(dataURL)  # unpack webpage contents
+        try:
+            page = urlopen(dataURL)  # unpack webpage contents
+        except:
+            signal.alarm(0)
+            print("urlRead FAILED!!")
+            return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
         print("right after urlopen")
 
         # cycle thru page to find what we are looking for
