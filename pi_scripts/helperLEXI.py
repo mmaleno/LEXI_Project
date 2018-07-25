@@ -74,7 +74,6 @@ def checkWifiConnectivity():
 # function needed for readData timeout functionality
 def handler(signum, frame):
     print("readData timer is up!")
-    raise
 
 
 # returns a word to describe the RSSI value (lay-person friendly)
