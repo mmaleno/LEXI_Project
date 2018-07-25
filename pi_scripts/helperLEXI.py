@@ -66,6 +66,26 @@ def checkWifiConnectivity():
 
     return wifiConnected
 
+
+def convertRSSItoWord(rssi):
+    if (rssi > -30):
+        return "Very Good"
+    elif (rssi > -40):
+        return "Good"
+    elif (rssi > -50):
+        return "Average"
+    elif (rssi > -60):
+        return "Below Average"
+    elif (rssi > -70):
+        return "Weak"
+    elif (rssi > -80):
+        return "Very Weak"
+    elif (rssi >-90):
+        return "Minimal"
+    else:
+        return "Not Connected"
+
+
 # function to grab data from ESP8266's website/IP
 def readData():
 
@@ -93,6 +113,13 @@ def readData():
         # cycle thru page to find what we are looking for
         for line in page:
 
+            if b'wifi: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                rssiStr = line[start_index+1:end_index].decode('utf-8')
+                print("Wifi Strength: " + rssiStr)
+                rssi = int(rssiStr)
+            
             # in this case, we used 'x: ' to find the line with x data
             # we need " b' " in front of the string to turn it into a byte-type
             if b'x: ' in line:
@@ -172,7 +199,7 @@ def readData():
 
         page.close()                # close python's reading of URL
 
-        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer]     # pack important info into array
+        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer, rssi]     # pack important info into array
         lastSuccessHour = hour
         lastSuccessMinute = minute
         lastSuccessSecond = second
@@ -184,7 +211,7 @@ def readData():
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
 
         print("urlRead FAILED!!")
-        return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian]
+        return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
 
 # initialize our plot so animation looks clean
 def initPlot():
@@ -249,6 +276,7 @@ def animate(i):
     print("valArray[6]: " + str(valArray[6]))
     print("valArray[7]: " + str(valArray[7]))
     print("valArray[8]: " + str(valArray[8]))
+    print("valArray[8]: " + str(valArray[9]))
 
     # convert extracted GPS values into coordinates (see convertCoord above)
     coordPix = convertCoord(valArray)
@@ -260,6 +288,8 @@ def animate(i):
     print("yPix: " + str(coordPix[1]))
 
     initPlot()    # see initPlot() in this file above
+
+    stringWiFiStrength = convertRSSItoWord(valArray[9])
 
     # Determine string of wifi status
     if (valArray[2]):
@@ -299,8 +329,11 @@ def animate(i):
     plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:   ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.35, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.29, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
+    if (valArray[2]):
+        plt.text(0.285, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.25, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.19, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
 
     # plot a red dot of the position on the map
