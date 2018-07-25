@@ -22,6 +22,7 @@ from matplotlib.font_manager import FontProperties  # for changing font in GUI w
 import numpy as np                                  # for plotting on GUI window
 import time                                         # for forcing the program to slow down
 import os                                           # for pinging our ESP8266
+import signal                                       # for making a timeout for readData()
 
 fig = plt.figure()              # create a figure within our plot
 fontReg = FontProperties()      # create a font object for regular weight
@@ -51,6 +52,7 @@ lastSuccessMinute = 0
 lastSuccessSecond = 0
 lastSuccessMeridian = 'NEVER'
 
+
 # function to see if tracker is connected
 def checkWifiConnectivity():
     wifiConnected = 0 # by default, we say our ESP8266 is not connected. We're pessimistic!
@@ -69,6 +71,13 @@ def checkWifiConnectivity():
     return wifiConnected
 
 
+# function needed for readData timeout functionality
+def handler(signum, frame):
+    print("readData timer is up!")
+    raise Exception("exception raised")
+
+
+# returns a word to describe the RSSI value (lay-person friendly)
 def convertRSSItoWord(rssi):
     if (rssi > -30):
         return "Very Good"
@@ -103,17 +112,19 @@ def readData():
     wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
                                             # ...connected to tracker via wifi
     
-    # NEED TO START TIMEOUT COUNTER HERE --------------------------------------------------------
-    # timeout should probably be around 3-4 seconds
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(3)
 
+    #if(readDataBool):
     if (wifiConnected): # wifiConnected is 1 is it is connected
 
         # initialize coordinates as 0
         xVal = 0
         yVal = 0
         numSats = 0
-
+        print("Right before urlopen")
         page = urlopen(dataURL)  # unpack webpage contents
+        print("right after urlopen")
 
         # cycle thru page to find what we are looking for
         for line in page:
@@ -211,10 +222,10 @@ def readData():
         lastSuccessMeridian = mer
 
         print("End readData")
-        return valArray
-        
-    else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
+        return valArray        
 
+    else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
+        signal.alarm(0)
         print("urlRead FAILED!!")
         return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
 
