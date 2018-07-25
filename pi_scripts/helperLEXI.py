@@ -1,9 +1,8 @@
-# helperLEXI.py - 7/24/18
+# helperLEXI.py - 7/25/18
 # a clean version of live_animate.py (alongside mainLEXI.py)
+# As of 7/25 1:45am, there are no known bugs!! It appears error handling is smooth
 
 # see mainLEXI.py for TODO
-
-# Reverted file back to before readData timeout
 
 # Quick trick to detect what operating system we are on,
 # so that OS-specific lines are included automatically
@@ -105,9 +104,6 @@ def readData():
 
     wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
                                             # ...connected to tracker via wifi
-    
-    # NEED TO START TIMEOUT COUNTER HERE --------------------------------------------------------
-    # timeout should probably be around 3-4 seconds
 
     if (wifiConnected): # wifiConnected is 1 is it is connected
 
