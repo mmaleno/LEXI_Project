@@ -1,4 +1,4 @@
-# helperLEXI.py - 7/8/18
+# helperLEXI.py - 7/24/18
 # a clean version of live_animate.py (alongside mainLEXI.py)
 
 # see mainLEXI.py for TODO
@@ -273,7 +273,7 @@ def animate(i):
             valArray[1] = 0
     else:
         stringWifiConnected = 'Not'
-        stringFixStatus = 'Pending Tracker Connection'
+        stringFixStatus = 'Waiting for Tracker'
 
     stringHour = str(valArray[5])
     stringMinute = str(valArray[6])
@@ -288,6 +288,10 @@ def animate(i):
         stringSecond = "0" + str(valArray[7])
 
     stringTime = stringHour + ":" + stringMinute + ":" + stringSecond + " " + stringMeridian
+
+    # fix stringTime to be just "NEVER" if there has never been a successful transmission
+    if (stringTime == "00:00:00 NEVER"):
+        stringTime = "Never"
 
     print()
     # print relevant information off to the left hand side of our window (see values ~0.02)

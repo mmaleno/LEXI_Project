@@ -4,7 +4,6 @@
 # TODO:  -remove copious print statements (maybe not, they've been helpful)
 #        -display text of "real word" location (ex: "driveway", "backyard", etc.),
 #        -put tracker connection pending text on next line (have text wrap)
-#        -instead of changing mac/pi every time, make a system-specific conditional
 #        -make system compare current time to last successful transmission time,
 #         if it is more than 10-15 seconds, then have tracker disconnected
 #        -Instead of 00:00:00 NEVER, make just "NEVER"
