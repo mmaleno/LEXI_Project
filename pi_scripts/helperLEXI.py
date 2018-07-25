@@ -55,7 +55,9 @@ lastSuccessMeridian = 'NEVER'
 def checkWifiConnectivity():
     wifiConnected = 0 # by default, we say our ESP8266 is not connected. We're pessimistic!
 
-    response = os.system("ping -c 1 " + hostname) # ping our ESP8266
+    response = os.system("ping -c 1 -t 4 " + hostname)   # ping our ESP8266
+                                                        # -c 1 means one packet
+                                                        # -t 4 means 4-second timeout
     
     # check response
     if (response == 0):
@@ -101,6 +103,9 @@ def readData():
     wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
                                             # ...connected to tracker via wifi
     
+    # NEED TO START TIMEOUT COUNTER HERE --------------------------------------------------------
+    # timeout should probably be around 3-4 seconds
+
     if (wifiConnected): # wifiConnected is 1 is it is connected
 
         # initialize coordinates as 0
@@ -341,7 +346,7 @@ def animate(i):
     plt.scatter([coordPix[0]], [coordPix[1]], c='r', s=100)
 
     print("End animate")
-    time.sleep(4)
+    time.sleep(1)
 
 # animate the figure so that it is getting live GPS updates
 def update():

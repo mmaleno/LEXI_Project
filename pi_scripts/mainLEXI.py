@@ -2,7 +2,9 @@
 # a clean version of live_animate.py (alongside helperLEXI.py)
 
 # TODO:  -remove copious print statements (maybe not, they've been helpful)
-#        -display text of "real word" location (ex: "driveway", "backyard", etc.),
+#        -display text of "real word" location (ex: "driveway", "backyard", etc.)
+#        -give readData() a timeout, because if tracker disconnects during readData()
+#         then system gets hung up
 #        -make system compare current time to last successful transmission time,
 #         if it is more than 10-15 seconds, then have tracker disconnected
 #        -display battery voltage - need some resistors from home to make voltage divider
