@@ -115,8 +115,9 @@ def readData():
         xVal = 0
         yVal = 0
         numSats = 0
-
-        page = urlopen(dataURL)  # unpack webpage contents
+        print("Right before urlopen")
+        page = urlopen(dataURL, timeout=5)  # unpack webpage contents
+        print("Right after urlopen")
 
         # cycle thru page to find what we are looking for
         for line in page:
