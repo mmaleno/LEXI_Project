@@ -331,7 +331,7 @@ def animate(i):
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:   ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
     if (valArray[2]):
-        plt.text(0.285, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
+        plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.25, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.19, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
