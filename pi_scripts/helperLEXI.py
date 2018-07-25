@@ -116,7 +116,13 @@ def readData():
         yVal = 0
         numSats = 0
         print("Right before urlopen")
-        page = urlopen(dataURL, timeout=5)  # unpack webpage contents
+        try:
+            page = urlopen(dataURL, timeout=5)  # unpack webpage contents
+        except:
+            print("urlopen timeout reached, returning failed wifiConnectivity array")
+            return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
+
+
         print("Right after urlopen")
 
         # cycle thru page to find what we are looking for
