@@ -3,9 +3,15 @@
 
 # see mainLEXI.py for TODO
 
-# When running this on the pi, be sure to uncomment PyQt5, win, and mng
+# Quick trick to detect what operating system we are on,
+# so that OS-specific lines are included automatically
+import platform
+version = ''                        # should be 'pi' when running on pi, mac if otherwise
 
-version = 'mac'     # set this equal to 'pi' when running on pi
+if (platform.system() == 'Linux'):
+    version = 'pi'
+else:
+    version = 'mac'
 
 from urllib.request import urlopen                  # for reading data from ESP8266
 if (version == 'pi'):
