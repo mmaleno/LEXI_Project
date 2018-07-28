@@ -286,6 +286,10 @@ def convertCoord(valArray):
     return [xPix, yPix]
 
 def getBatTelemetry(ADCreading):
+
+    if (ADCreading == 0):
+        return [0, 0.00]
+
     # real equation is (0.95V/1023LSB)*(ADCreading)*(2670 Ohms)/(470 Ohms), but i simplified it
     # to a ratio that is accurate enough for my mom
     batteryVoltageRaw = Decimal(0.00528 * ADCreading)
