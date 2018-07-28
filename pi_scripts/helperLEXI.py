@@ -1,5 +1,4 @@
-# helperLEXI.py - 7/25/18
-# a clean version of live_animate.py (alongside mainLEXI.py)
+# helperLEXI.py - 7/27/18
 # As of 7/25 1:45am, there are no known bugs!! It appears error handling is smooth
 
 # see mainLEXI.py for TODO
@@ -16,7 +15,7 @@ else:
 
 from urllib.request import urlopen                  # for reading data from ESP8266
 if (version == 'pi'):
-    from PyQt5 import QtWidgets                        # for controlling GUI window on pi
+    from PyQt5 import QtWidgets                     # for controlling GUI window on pi
 import matplotlib.pyplot as plt                     # for plotting on GUI window
 import matplotlib.animation as animation            # for live-animating GUI window
 from matplotlib.font_manager import FontProperties  # for changing font in GUI window
@@ -47,6 +46,7 @@ zeroLat = 33.652619
 imWidthLong = -117.753419
 imHeightLat = 33.653867
 
+# global variables so that we have some memory of when our last successful transmission was
 lastSuccessHour = 0
 lastSuccessMinute = 0
 lastSuccessSecond = 0
@@ -54,9 +54,10 @@ lastSuccessMeridian = 'NEVER'
 
 # function to see if tracker is connected
 def checkWifiConnectivity():
+
     wifiConnected = 0 # by default, we say our ESP8266 is not connected. We're pessimistic!
 
-    response = os.system("ping -c 1 -t 4 " + hostname)   # ping our ESP8266
+    response = os.system("ping -c 1 -t 4 " + hostname)  # ping our ESP8266
                                                         # -c 1 means one packet
                                                         # -t 4 means 4-second timeout
     
@@ -70,7 +71,7 @@ def checkWifiConnectivity():
     return wifiConnected
 
 
-# returns a word to describe the RSSI value (lay-person friendly)
+# returns a word to describe the RSSI value (lay-person friendly).  Values are in dBm
 def convertRSSItoWord(rssi):
     if (rssi > -30):
         return "Very Good"
@@ -90,7 +91,7 @@ def convertRSSItoWord(rssi):
         return "Not Connected"
 
 
-# function to grab data from ESP8266's website/IP
+# function to grab data from ESP8266's hosted website/IP
 def readData():
 
     print("Start readData")
@@ -100,30 +101,30 @@ def readData():
     global lastSuccessSecond    
     global lastSuccessMeridian
 
-    reachedSats = 0
+    reachedSats = 0                         # boolean to store whether we have reached
+                                            # the "if b'sats: '" conditional (see below)
 
-    wifiConnected = checkWifiConnectivity() # boolean confirmation that we are...
-                                            # ...connected to tracker via wifi
+    wifiConnected = checkWifiConnectivity() # boolean confirmation that we are
+                                            # connected to tracker via wifi
 
-    if (wifiConnected): # wifiConnected is 1 is it is connected
+    if (wifiConnected): # wifiConnected is 1 if it is connected
 
         # initialize coordinates as 0
         xVal = 0
         yVal = 0
         numSats = 0
-        print("Right before urlopen")
+
+        # try/except to catch the timeout error if the ESP8266 is not connected to WiFi
         try:
             page = urlopen(dataURL, timeout=5)  # unpack webpage contents
         except:
             print("urlopen timeout reached, returning failed wifiConnectivity array")
             return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
 
-
-        print("Right after urlopen")
-
-        # cycle thru page to find what we are looking for
+        # cycle thru page to extract our telemetry
         for line in page:
-
+            
+            # see next conditional to get description of whats happening here
             if b'wifi: ' in line:
                 start_index = line.decode('utf-8').find(' ')
                 end_index = line.decode('utf-8').find('<')
@@ -132,7 +133,8 @@ def readData():
                 rssi = int(rssiStr)
             
             # in this case, we used 'x: ' to find the line with x data
-            # we need " b' " in front of the string to turn it into a byte-type
+            # we need " b' " in front of the string to turn it into a byte-type.
+            # Please see either HTML source code or collar Arduino code to compare formatting
             if b'x: ' in line:
 
                 # find start and end indices of x value
@@ -199,6 +201,8 @@ def readData():
                             print("Meridian: " + merStr)
                             mer = merStr
                             break
+                
+                # if our transmission fails, return the stored last successful transmission timestamp
                 else:
                     hour = lastSuccessHour
                     minute = lastSuccessMinute
@@ -210,7 +214,10 @@ def readData():
 
         page.close()                # close python's reading of URL
 
+        # pack our extracted telemetry into our return array
         valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer, rssi]     # pack important info into array
+        
+        # update the last successful transmission timestamp into the global variables
         lastSuccessHour = hour
         lastSuccessMinute = minute
         lastSuccessSecond = second
@@ -224,8 +231,12 @@ def readData():
         print("urlRead FAILED!!")
         return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
 
+
 # initialize our plot so animation looks clean
 def initPlot():
+
+    global version
+
     plt.clf()                # clear plot
     plt.axis('off')          # remove axes from plot
     plt.ylim(0,imHeight)     # force y axis to start at 0 at bottom left
@@ -249,16 +260,13 @@ def initPlot():
     # give our window a fitting title
     fig.canvas.set_window_title('LEXI Tracker')
     
+
 # convert GPS coordinates into plottable (x,y) coordinates
 def convertCoord(valArray):
 
-    # unpack valArray values into (more) usable variables
+    # unpack the coordinate valArray values into (more) usable variable names
     xDeg = valArray[0]
     yDeg = valArray[1]
-
-    # print the extracted values for convenient console debugging
-    print("xDeg: " + str(xDeg))
-    print("yDeg: " + str(yDeg))
 
     # formula for converting the GPS coordinates into plottable pixel coordinates
     xPix = (imWidth / (imWidthLong - zeroLong)) * (xDeg - zeroLong)
@@ -270,9 +278,9 @@ def convertCoord(valArray):
 def animate(i):
     print("Start animate")
 
+    # initialize status strings as empty, because why not ¯\_(ツ)_/¯
     stringWifiConnected = ''
     stringFixStatus = ''
-    
     
     # extract GPS data (see readData() in this file above)
     valArray = readData()
@@ -287,40 +295,42 @@ def animate(i):
     print("valArray[6]: " + str(valArray[6]))
     print("valArray[7]: " + str(valArray[7]))
     print("valArray[8]: " + str(valArray[8]))
-    print("valArray[8]: " + str(valArray[9]))
+    print("valArray[9]: " + str(valArray[9]))
 
     # convert extracted GPS values into coordinates (see convertCoord above)
     coordPix = convertCoord(valArray)
-    
-    # print the extracted and converted values for debugging
-    print("Long: " + str(valArray[0]))
-    print("Lat:  " + str(valArray[1]))
-    print("xPix: " + str(coordPix[0]))
-    print("yPix: " + str(coordPix[1]))
 
     initPlot()    # see initPlot() in this file above
 
-    stringWiFiStrength = convertRSSItoWord(valArray[9])
+    stringWiFiStrength = convertRSSItoWord(valArray[9])     # see convertRSSItoWord above
 
     # Determine string of wifi status
     if (valArray[2]):
+        
         stringWifiConnected = 'Is'
-        # Determine string of GPS status
+        
+        # Determine string of GPS status, only if we have wifi connection
         if (valArray[3]):
             stringFixStatus = str(valArray[4]) + ' Sats Connected'
+        
+        # if we don't have a gps fix, let our user know! 
         else:
             stringFixStatus = 'No Fix'
             valArray[0] = 0
             valArray[1] = 0
+
+    # if we don't have wifi connectivity, let our user know! 
     else:
         stringWifiConnected = 'Not'
         stringFixStatus = 'Waiting for Tracker'
 
+    # turn our timestamp into printable strings
     stringHour = str(valArray[5])
     stringMinute = str(valArray[6])
     stringSecond = str(valArray[7])
     stringMeridian = valArray[8]
     
+    # if our timestamp values are single-digit, reformat them to look official and pretty
     if (valArray[5]<10):
         stringHour = "0" + str(valArray[5])
     if (valArray[6]<10):
@@ -328,6 +338,7 @@ def animate(i):
     if (valArray[7]<10):
         stringSecond = "0" + str(valArray[7])
 
+    # combine all timestamp strings into one big string
     stringTime = stringHour + ":" + stringMinute + ":" + stringSecond + " " + stringMeridian
 
     # fix stringTime to be just "NEVER" if there has never been a successful transmission
@@ -341,7 +352,7 @@ def animate(i):
     plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:   ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
-    if (valArray[2]):
+    if (valArray[2]):   # if we have a wifi connection, print the wifi rssi value (in dBm)
         plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.25, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.19, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
@@ -352,10 +363,14 @@ def animate(i):
     plt.scatter([coordPix[0]], [coordPix[1]], c='r', s=100)
 
     print("End animate")
-    time.sleep(1)
+    time.sleep(1)           # delay for a second to give the user time to take in the data printed
+
 
 # animate the figure so that it is getting live GPS updates
 def update():
+    
+    global version
+
     if (version == 'pi'):
         # Maximize the size of the window so that it takes up the whole display
         mng = plt.get_current_fig_manager()
