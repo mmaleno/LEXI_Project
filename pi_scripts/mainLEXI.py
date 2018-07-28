@@ -3,7 +3,10 @@
 
 # TODO:  -display text of "real word" location (ex: "driveway", "backyard", etc.)
 #        -display battery voltage - need some resistors from home to make voltage divider
+#        -Display last known battery, if last known battery <20% then say probably dead
 #        -add auto script run (without having to tap terminal)
+#        -add last known coordinates to display last location of Lexi, and make dot other color
+#        -change color of text when not connected
 #        -ENABLE REMOTE TALKING TO LEXI?????? (need mic and speaker)
 #        -Add multiple-dog functionality
 #       Allow multiple files by passing fig object as argument in function

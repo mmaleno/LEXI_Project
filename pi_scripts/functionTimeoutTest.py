@@ -28,3 +28,9 @@ longLoop()
 signal.alarm(0)
 
 print("made it out")
+
+def convertVoltToPercent(voltage):
+    if(voltage == 0):
+        voltage = 2.8
+    percent = ((voltage - 2.8)/0.4)*100
+    return percent

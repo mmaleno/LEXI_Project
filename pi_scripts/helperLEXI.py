@@ -115,22 +115,32 @@ def readData():
         numSats = 0
 
         # try/except to catch the timeout error if the ESP8266 is not connected to WiFi
+        # this is here in case the ESP8266 loses connection between the pi pinging it
+        # and the pi reading the HTML doc.  Polished!
         try:
             page = urlopen(dataURL, timeout=5)  # unpack webpage contents
         except:
             print("urlopen timeout reached, returning failed wifiConnectivity array")
-            return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
+            return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90, 0]
 
         # cycle thru page to extract our telemetry
         for line in page:
             
-            # see next conditional to get description of whats happening here
+            # see x coord conditional to get description of whats happening here
             if b'wifi: ' in line:
                 start_index = line.decode('utf-8').find(' ')
                 end_index = line.decode('utf-8').find('<')
                 rssiStr = line[start_index+1:end_index].decode('utf-8')
                 print("Wifi Strength: " + rssiStr)
                 rssi = int(rssiStr)
+
+            # see below conditional for description of whats happening here
+            if b'adc: ' in line:
+                start_index = line.decode('utf-8').find(' ')
+                end_index = line.decode('utf-8').find('<')
+                adcStr = line[start_index+1:end_index].decode('utf-8')
+                print("ADC Reading: " + adcStr)
+                ADCreading = float(adcStr)
             
             # in this case, we used 'x: ' to find the line with x data
             # we need " b' " in front of the string to turn it into a byte-type.
@@ -215,7 +225,7 @@ def readData():
         page.close()                # close python's reading of URL
 
         # pack our extracted telemetry into our return array
-        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer, rssi]     # pack important info into array
+        valArray = [xVal,yVal, wifiConnected, fixStatus, numSats, hour, minute, second, mer, rssi, ADCreading]     # pack important info into array
         
         # update the last successful transmission timestamp into the global variables
         lastSuccessHour = hour
@@ -229,7 +239,7 @@ def readData():
     else:   # if we make it to this block, then wifiConnected == 0 and tracker is offline
 
         print("urlRead FAILED!!")
-        return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90]
+        return [0,0,wifiConnected, 0, 0, lastSuccessHour, lastSuccessMinute, lastSuccessSecond, lastSuccessMeridian, -90, 0]
 
 
 # initialize our plot so animation looks clean
@@ -296,6 +306,7 @@ def animate(i):
     print("valArray[7]: " + str(valArray[7]))
     print("valArray[8]: " + str(valArray[8]))
     print("valArray[9]: " + str(valArray[9]))
+    print("valArray[10]: " + str(valArray[10]))
 
     # convert extracted GPS values into coordinates (see convertCoord above)
     coordPix = convertCoord(valArray)
@@ -354,8 +365,9 @@ def animate(i):
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
     if (valArray[2]):   # if we have a wifi connection, print the wifi rssi value (in dBm)
         plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.25, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.19, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.25, 'Battery: ' + str(valArray[10]) + ' V', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.15, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.09, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
 
     # plot a red dot of the position on the map
