@@ -22,6 +22,7 @@ from matplotlib.font_manager import FontProperties  # for changing font in GUI w
 import numpy as np                                  # for plotting on GUI window
 import time                                         # for forcing the program to slow down
 import os                                           # for pinging our ESP8266
+from decimal import Decimal                         # for making battery calculations
 
 fig = plt.figure()              # create a figure within our plot
 fontReg = FontProperties()      # create a font object for regular weight
@@ -284,6 +285,19 @@ def convertCoord(valArray):
 
     return [xPix, yPix]
 
+def getBatTelemetry(ADCreading):
+    # real equation is (0.95V/1023LSB)*(ADCreading)*(2670 Ohms)/(470 Ohms), but i simplified it
+    # to a ratio that is accurate enough for my mom
+    batteryVoltageRaw = Decimal(0.00528 * ADCreading)
+    batteryVoltageClean = round(batteryVoltageRaw,2)
+
+    #     batteryPercentRaw = Decimal( ( ( ( 0.00528 * ADCreading ) - 2.8 ) / 0.4 ) * 100 )
+
+    batteryPercentRaw = Decimal( ( ( ( 0.00528 * ADCreading ) - 2.8 ) / 1.4 ) * 100 )
+    batteryPercentClean = round(batteryPercentRaw)
+
+    return [batteryPercentClean, batteryVoltageClean]
+
 # animation loop to display live coordinates on figure window
 def animate(i):
     print("Start animate")
@@ -356,6 +370,9 @@ def animate(i):
     if (stringTime == "00:00:00 NEVER"):
         stringTime = "Never"
 
+    # get battery percentage and voltage from ADC reading
+    batteryTelemetry = getBatTelemetry(valArray[10])
+
     print()
     # print relevant information off to the left hand side of our window (see values ~0.02)
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
@@ -365,7 +382,7 @@ def animate(i):
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
     if (valArray[2]):   # if we have a wifi connection, print the wifi rssi value (in dBm)
         plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.25, 'Battery: ' + str(valArray[10]) + ' V', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.25, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.15, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.09, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
