@@ -288,7 +288,7 @@ def convertCoord(valArray):
 def getBatTelemetry(ADCreading):
 
     if (ADCreading == 0):
-        return [0, 0.00]
+        return [0, 0.0]
 
     # real equation is (0.95V/1023LSB)*(ADCreading)*(2670 Ohms)/(470 Ohms), but i simplified it
     # to a ratio that is accurate enough for my mom
@@ -386,7 +386,7 @@ def animate(i):
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
     if (valArray[2]):   # if we have a wifi connection, print the wifi rssi value (in dBm)
         plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.25, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
+    plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.15, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
     plt.text(0.02, 0.09, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
     #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
