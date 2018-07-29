@@ -1,7 +1,16 @@
-# helperLEXI.py - 7/27/18
-# As of 7/25 1:45am, there are no known bugs!! It appears error handling is smooth
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-# see mainLEXI.py for TODO
+"""
+File: helperLEXI.py
+
+Author: Max Maleno
+
+Last Updated: 7/28/18
+
+see mainLEXI.py for TODO
+
+"""
 
 # Quick trick to detect what operating system we are on,
 # so that OS-specific lines are included automatically
@@ -32,8 +41,8 @@ fontBold.set_weight('bold')     # set the bold font object's weight to bold
 fontBold.set_size(24)           # set the bold font object's size to a title-size
 
 image_name = 'thePark.png'        # be sure screenshot of map is .png
-hostname = '192.168.0.5'          # version of IP for ping
-dataURL = 'http://192.168.0.5'    # IP of ESP8266 for urlopen
+hostname = '172.20.10.2'            #'192.168.0.5'          # version of IP for ping
+dataURL = 'http://172.20.10.2'#'http://192.168.0.5'    # IP of ESP8266 for urlopen
 
 im = np.flipud(plt.imread(image_name))  # need to flip image up/down...
                                         # ...due to how pixels are indexed

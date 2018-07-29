@@ -1,5 +1,14 @@
-# mainLEXI.py - 7/27/18
-# As of 7/25 1:45am, there are no known bugs!! It appears error handling is smooth
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+"""
+File: mainLEXI.py
+
+Author: Max Maleno
+
+Last Updated: 7/28/18
+
+"""
 
 # TODO:
 #        -add last known coordinates to display last location of Lexi, and make dot other color
