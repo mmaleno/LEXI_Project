@@ -68,6 +68,8 @@ def checkWifiConnectivity():
         wifiConnected = 1           # set wifiConnected to TRUE
     else:
         print(hostname, 'is down!') # print error message, leave wifiConnected as FALSE
+    
+    print()     # print empty line to separate from block of values on console
 
     return wifiConnected
 
@@ -377,19 +379,49 @@ def animate(i):
     # get battery percentage and voltage from ADC reading
     batteryTelemetry = getBatTelemetry(valArray[10])
 
-    print()
+    print()     # print empty line to distinguish values better on console
+
     # print relevant information off to the left hand side of our window (see values ~0.02)
+    # print title of program on top left corner, big font, bold
     plt.text(0.05, 0.8, 'Lexi\'s Current \n    Location', fontproperties=fontBold,transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
+    
+    # If tracker is not connected, print Not Connected in red.  If it is connnected, print Is Connected in black
+    if (not valArray[2]):
+        plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', color='red', fontsize=18, transform=plt.gcf().transFigure)
+    else:
+        plt.text(0.02, 0.7, 'Tracker: ' + stringWifiConnected + ' Connected', fontsize=18, transform=plt.gcf().transFigure)
+    
+    # If GPS not connected, print No Fix in red.  If it is connected, print the number of satellites in black
+    if (not valArray[0]):
+        plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, color='red', fontsize=18, transform=plt.gcf().transFigure)
+    else:
+        plt.text(0.02, 0.6, 'GPS: ' + stringFixStatus, fontsize=18, transform=plt.gcf().transFigure)
+    
+    # Print time of last successful transmission.  Time is be == 'Never' if we have not had a successful transmission yet
     plt.text(0.02, 0.45, 'Last Successful\n Transmission:   ' + stringTime, fontsize=14, transform=plt.gcf().transFigure)
+    
+    # Print the human-readable description of the strength of the tracker's wifi.  prints the actual rssi value if it is connected
     plt.text(0.02, 0.35, 'Tracker Strength: ' + stringWiFiStrength, fontsize=14, transform=plt.gcf().transFigure)
     if (valArray[2]):   # if we have a wifi connection, print the wifi rssi value (in dBm)
         plt.text(0.24, 0.3, '(' + str(valArray[9]) + ' dBm)', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.15, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
-    plt.text(0.02, 0.09, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
-    #plt.text(0.02, 0.222, 'Speed: ' + '100' + ' mph', fontsize=14, transform=plt.gcf().transFigure)
+    
+    # Print battery info conditionals.  if <=0%, then print not connected in red.  if <50%, print percentage and voltage
+    # in red.  If connected and above 50%, print percentage and voltage in black.
+    if (batteryTelemetry[0] <= 0):
+        plt.text(0.02, 0.23, 'Battery: Not Connected', color='red', fontsize=14, transform=plt.gcf().transFigure)
+    elif (batteryTelemetry[0] < 50):
+        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', color='red', fontsize=14, transform=plt.gcf().transFigure)
+    else:
+        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
+    
+    # If GPS is not connected, then print Unknown in red.  If it is connected, print the lat/long in black.
+    if (not valArray[0]):
+        plt.text(0.02, 0.15, 'Lat: Unknown', fontsize=14, transform=plt.gcf().transFigure)
+        plt.text(0.02, 0.09, 'Long: Unknown', fontsize=14, transform=plt.gcf().transFigure)
+    else:
+        plt.text(0.02, 0.15, 'Lat: ' + str(valArray[1]) + ' N', fontsize=14, transform=plt.gcf().transFigure)
+        plt.text(0.02, 0.09, 'Long: ' + str(-valArray[0]) + ' W', fontsize=14, transform=plt.gcf().transFigure)
+
 
     # plot a red dot of the position on the map
     # scatter takes (xCoord, yCoord, dotColor, dotSize)
