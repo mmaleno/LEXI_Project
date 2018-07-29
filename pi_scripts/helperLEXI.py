@@ -41,8 +41,8 @@ fontBold.set_weight('bold')     # set the bold font object's weight to bold
 fontBold.set_size(24)           # set the bold font object's size to a title-size
 
 image_name = 'thePark.png'        # be sure screenshot of map is .png
-hostname = '172.20.10.2'            #'192.168.0.5'          # version of IP for ping
-dataURL = 'http://172.20.10.2'#'http://192.168.0.5'    # IP of ESP8266 for urlopen
+hostname = '192.168.0.5'          # version of IP for ping #'172.20.10.2' over my phone's hotspot
+dataURL = 'http://192.168.0.5'    # IP of ESP8266 for urlopen #'http://172.20.10.2' over my phone
 
 im = np.flipud(plt.imread(image_name))  # need to flip image up/down...
                                         # ...due to how pixels are indexed
@@ -419,9 +419,9 @@ def animate(i):
     if (batteryTelemetry[0] <= 0):
         plt.text(0.02, 0.23, 'Battery: Not Connected', color='red', fontsize=14, transform=plt.gcf().transFigure)
     elif (batteryTelemetry[0] < 50):
-        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', color='red', fontsize=14, transform=plt.gcf().transFigure)
+        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ' V)', color='red', fontsize=14, transform=plt.gcf().transFigure)
     else:
-        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ') V', fontsize=14, transform=plt.gcf().transFigure)
+        plt.text(0.02, 0.23, 'Battery: ' + str(batteryTelemetry[0]) + ' %  (' + str(batteryTelemetry[1]) + ' V)', fontsize=14, transform=plt.gcf().transFigure)
     
     # If GPS is not connected, then print Unknown in red.  If it is connected, print the lat/long in black.
     if (not valArray[0]):
