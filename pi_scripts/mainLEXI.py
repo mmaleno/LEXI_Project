@@ -6,12 +6,13 @@ File: mainLEXI.py
 
 Author: Max Maleno
 
-Last Updated: 7/28/18
+Last Updated: 8/5/18
 
 """
 
 # TODO:
 #        -add last known coordinates to display last location of Lexi, and make dot other color
+#        -Fix fact that when tracker is not connected on startup, -90 dBm shows
 #        -ENABLE REMOTE TALKING TO LEXI?????? (need mic and speaker)
 #        -Add multiple-dog functionality
 #       Add easy turn on - need to add switch/button to RUN pins onboard the pi
